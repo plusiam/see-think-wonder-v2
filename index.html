@@ -128,14 +128,22 @@
             font-weight: bold;
             min-width: 40px;
         }
-        
-        .info-field .line {
-            width: 60px;
-            height: 1px;
-            background: #333;
+
+        .info-input {
             border: none;
             border-bottom: 2px solid #333;
-            display: inline-block;
+            background-color: transparent;
+            width: 80px;
+            font-size: 15px;
+            font-family: inherit;
+            text-align: center;
+            outline: none;
+            padding-bottom: 2px;
+            transition: border-color 0.2s;
+        }
+
+        .info-input:focus {
+            border-bottom-color: #4a90e2;
         }
         
         @media (max-width: 768px) {
@@ -143,8 +151,25 @@
                 font-size: 14px;
             }
             
-            .info-field .line {
+            .info-input {
                 width: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .student-info {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .info-field {
+                width: 100%;
+            }
+            
+            .info-input {
+                flex: 1;
+                max-width: none;
             }
         }
         
@@ -744,6 +769,7 @@
         @media (max-width: 480px) {
             .btn {
                 width: 100%;
+                margin-bottom: 10px;
             }
             
             .worksheet {
@@ -771,21 +797,6 @@
                 width: 100%;
                 padding: 10px;
                 font-size: 14px;
-            }
-            
-            .student-info {
-                flex-direction: column;
-                gap: 10px;
-                align-items: flex-start;
-            }
-            
-            .info-field {
-                width: 100%;
-            }
-            
-            .info-field .line {
-                flex: 1;
-                max-width: none;
             }
             
             .section-title {
@@ -939,16 +950,16 @@
     
     <div class="student-info">
         <div class="info-field">
-            <label>학반:</label>
-            <div class="line"></div>
+            <label for="classInput">학반:</label>
+            <input type="text" id="classInput" class="info-input">
         </div>
         <div class="info-field">
-            <label>번호:</label>
-            <div class="line"></div>
+            <label for="numberInput">번호:</label>
+            <input type="text" id="numberInput" class="info-input">
         </div>
         <div class="info-field">
-            <label>이름:</label>
-            <div class="line"></div>
+            <label for="nameInput">이름:</label>
+            <input type="text" id="nameInput" class="info-input">
         </div>
     </div>
     
@@ -1087,7 +1098,7 @@ window.onload = function() {
     
     setupCanvasEvents();
     setupDragDrop();
-    setupTextareas();
+    setupInputs(); // 함수 이름 변경: setupTextareas -> setupInputs
     
     // 캔버스 초기 크기 설정
     setTimeout(() => {
@@ -1124,8 +1135,15 @@ function resizeCanvas() {
     }
 }
 
-// Textarea 자동 높이 조정 설정
-function setupTextareas() {
+// 입력 필드 설정 함수
+function setupInputs() {
+    // 학생 정보 입력 필드
+    const infoInputs = document.querySelectorAll('.info-input');
+    infoInputs.forEach(input => {
+        input.addEventListener('input', saveFormData);
+    });
+
+    // See, Think, Wonder 텍스트 영역
     const textareas = document.querySelectorAll('.writing-textarea');
     textareas.forEach((textarea, index) => {
         // 입력 시 높이 자동 조정 및 자동 저장
@@ -1165,6 +1183,9 @@ function setupTextareas() {
 // 폼 데이터 저장
 function saveFormData() {
     const formData = {
+        class: document.getElementById('classInput').value,
+        number: document.getElementById('numberInput').value,
+        name: document.getElementById('nameInput').value,
         see: document.querySelectorAll('.writing-textarea')[0].value,
         think: document.querySelectorAll('.writing-textarea')[1].value,
         wonder: document.querySelectorAll('.writing-textarea')[2].value,
@@ -1180,6 +1201,10 @@ function loadFormData() {
         const formData = JSON.parse(savedData);
         const textareas = document.querySelectorAll('.writing-textarea');
         
+        if (formData.class) document.getElementById('classInput').value = formData.class;
+        if (formData.number) document.getElementById('numberInput').value = formData.number;
+        if (formData.name) document.getElementById('nameInput').value = formData.name;
+
         if (formData.see) textareas[0].value = formData.see;
         if (formData.think) textareas[1].value = formData.think;
         if (formData.wonder) textareas[2].value = formData.wonder;
@@ -1200,8 +1225,12 @@ function autoResizeTextarea(textarea) {
 function switchMode(mode) {
     currentMode = mode;
     const modeBtns = document.querySelectorAll('.mode-btn');
+    const clickedBtn = event.currentTarget; // Use currentTarget to ensure it's the button
+    
     modeBtns.forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (clickedBtn) {
+       clickedBtn.classList.add('active');
+    }
     
     const uploadPlaceholder = document.getElementById('uploadPlaceholder');
     const uploadedImage = document.getElementById('uploadedImage');
@@ -1426,6 +1455,9 @@ window.addEventListener('beforeunload', () => {
 // 모든 데이터 초기화
 function clearAllData() {
     if (confirm('모든 내용을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+        // 학생 정보 초기화
+        document.querySelectorAll('.info-input').forEach(input => input.value = '');
+
         // textarea 초기화
         document.querySelectorAll('.writing-textarea').forEach(textarea => {
             textarea.value = '';
@@ -1559,23 +1591,32 @@ function stopDrawing() {
 function setColor(color) {
     currentColor = color;
     isEraser = false;
+    const clickedBtn = event.currentTarget;
     
     document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (clickedBtn) {
+       clickedBtn.classList.add('active');
+    }
 }
 
 // 브러시 크기 설정
 function setBrushSize(size) {
     currentSize = size;
+    const clickedBtn = event.currentTarget;
     
     document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
+    if (clickedBtn) {
+        clickedBtn.classList.add('active');
+    }
 }
 
 // 지우개 토글
 function toggleEraser() {
     isEraser = !isEraser;
-    event.target.textContent = isEraser ? '펜' : '지우개';
+    const clickedBtn = event.currentTarget;
+    if (clickedBtn) {
+        clickedBtn.textContent = isEraser ? '펜' : '지우개';
+    }
     
     if (isEraser) {
         document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
