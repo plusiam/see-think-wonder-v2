@@ -485,6 +485,12 @@
             font-style: italic;
         }
         
+        .section-question-ko {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
         .section.see .writing-area:has(.writing-textarea:focus) {
             border-color: #28a745;
             box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
@@ -569,6 +575,137 @@
         /* 파일 입력 숨기기 */
         #fileInput {
             display: none;
+        }
+        
+        /* 템플릿 워크시트 스타일 */
+        .template-worksheet {
+            display: none;
+            width: 297mm;
+            height: 210mm;
+            margin: 0 auto;
+            background: white;
+            padding: 15mm;
+            position: relative;
+        }
+        
+        .template-header {
+            text-align: center;
+            margin-bottom: 10mm;
+        }
+        
+        .template-title {
+            background: #4a90e2;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-size: 32px;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .template-student-info {
+            position: absolute;
+            top: 15mm;
+            right: 15mm;
+            display: flex;
+            gap: 20px;
+        }
+        
+        .template-info-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+        
+        .template-info-field label {
+            font-weight: bold;
+        }
+        
+        .template-info-field .blank {
+            display: inline-block;
+            width: 100px;
+            border-bottom: 2px solid #333;
+            margin-left: 5px;
+        }
+        
+        .template-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            height: calc(100% - 80mm);
+            margin-top: 20mm;
+        }
+        
+        .template-section {
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .template-section.see {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .template-section.think {
+            border-color: #ffc107;
+            background: #fffef5;
+        }
+        
+        .template-section.wonder {
+            border-color: #dc3545;
+            background: #fff8f8;
+        }
+        
+        .template-section-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .template-section-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .template-section-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .template-section-question {
+            font-size: 16px;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        
+        .template-section-question-ko {
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .template-writing-area {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .template-footer {
+            position: absolute;
+            bottom: 10mm;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
         }
         
         /* 인쇄 전용 스타일 */
@@ -938,8 +1075,8 @@
 
 <div class="controls">
     <button class="btn" onclick="printWorksheet()">🖨️ 인쇄하기</button>
-    <button class="btn download" id="downloadBtn" onclick="downloadPDF()">📄 PDF 다운로드</button>
     <button class="btn image" id="imageBtn" onclick="downloadImage()">🖼️ 이미지 다운로드</button>
+    <button class="btn download" id="templateBtn" onclick="downloadTemplate()">📄 학습지 템플릿 (PDF)</button>
     <button class="btn reset" onclick="clearAllData()">🗑️ 초기화</button>
 </div>
 
@@ -1073,6 +1210,61 @@
     <div class="footer">
         하버드 프로젝트 제로(Project Zero) - Visible Thinking 사고 루틴
         <div class="tip">💡 Tip: Ctrl+Enter로 다음 칸으로 이동 | 작성 내용은 자동 저장됩니다</div>
+    </div>
+</div>
+
+<!-- 템플릿 워크시트 (숨김) -->
+<div class="template-worksheet" id="templateWorksheet">
+    <div class="template-header">
+        <div class="template-title">See Think Wonder</div>
+    </div>
+    
+    <div class="template-student-info">
+        <div class="template-info-field">
+            <label>학반:</label><span class="blank"></span>
+        </div>
+        <div class="template-info-field">
+            <label>번호:</label><span class="blank"></span>
+        </div>
+        <div class="template-info-field">
+            <label>이름:</label><span class="blank"></span>
+        </div>
+    </div>
+    
+    <div class="template-content">
+        <div class="template-section see">
+            <div class="template-section-header">
+                <div class="template-section-icon">👀</div>
+                <div class="template-section-title">SEE</div>
+                <div class="template-section-question">What do you see?</div>
+                <div class="template-section-question-ko">무엇이 보이나요?</div>
+            </div>
+            <div class="template-writing-area"></div>
+        </div>
+        
+        <div class="template-section think">
+            <div class="template-section-header">
+                <div class="template-section-icon">🤔</div>
+                <div class="template-section-title">THINK</div>
+                <div class="template-section-question">What do you think is going on?</div>
+                <div class="template-section-question-ko">무슨 일이 일어나고 있다고 생각하나요?</div>
+            </div>
+            <div class="template-writing-area"></div>
+        </div>
+        
+        <div class="template-section wonder">
+            <div class="template-section-header">
+                <div class="template-section-icon">❓</div>
+                <div class="template-section-title">WONDER</div>
+                <div class="template-section-question">What does it make you wonder?</div>
+                <div class="template-section-question-ko">무엇이 궁금한가요?</div>
+            </div>
+            <div class="template-writing-area"></div>
+        </div>
+    </div>
+    
+    <div class="template-footer">
+        하버드 프로젝트 제로(Project Zero) - Visible Thinking 사고 루틴
     </div>
 </div>
 
@@ -1653,120 +1845,35 @@ function printWorksheet() {
     }, 100);
 }
 
-// PDF 다운로드
-function downloadPDF() {
+// 학습지 템플릿 PDF 다운로드
+function downloadTemplate() {
     // 버튼 비활성화
-    const downloadBtn = document.getElementById('downloadBtn');
-    const originalText = downloadBtn.textContent;
-    downloadBtn.disabled = true;
-    downloadBtn.textContent = '⏳ PDF 생성 중...';
+    const templateBtn = document.getElementById('templateBtn');
+    const originalText = templateBtn.textContent;
+    templateBtn.disabled = true;
+    templateBtn.textContent = '⏳ 템플릿 생성 중...';
     
-    const element = document.getElementById('worksheet');
+    // 템플릿 워크시트 요소
+    const templateWorksheet = document.getElementById('templateWorksheet');
     
-    // 현재 모드가 그리기 모드인 경우 캔버스를 이미지로 변환
-    let canvasDataUrl = null;
-    if (currentMode === 'draw') {
-        const canvas = document.getElementById('drawingCanvas');
-        canvasDataUrl = canvas.toDataURL('image/png');
-    }
+    // 템플릿 표시
+    templateWorksheet.style.display = 'block';
     
     const opt = {
-        margin: [5, 10, 5, 10],
-        filename: 'See-Think-Wonder_학습지.pdf',
+        margin: 0,
+        filename: 'See-Think-Wonder_템플릿.pdf',
         image: { 
             type: 'jpeg', 
-            quality: 0.95 
+            quality: 0.98 
         },
         html2canvas: { 
-            scale: 1.5,
+            scale: 2,
             useCORS: true,
             logging: false,
             letterRendering: true,
-            allowTaint: true,
             backgroundColor: '#ffffff',
-            onclone: function(clonedDoc) {
-                // 복제된 문서에서 스타일 조정
-                const clonedElement = clonedDoc.getElementById('worksheet');
-                clonedElement.style.width = '1050px';
-                clonedElement.style.maxWidth = 'none';
-                clonedElement.style.margin = '0';
-                clonedElement.style.boxShadow = 'none';
-                clonedElement.style.padding = '30px';
-                
-                // 메인 컨테이너 조정
-                const mainContainer = clonedDoc.querySelector('.main-container');
-                if (mainContainer) {
-                    mainContainer.style.display = 'grid';
-                    mainContainer.style.gridTemplateColumns = '280px 1fr';
-                    mainContainer.style.gap = '20px';
-                }
-                
-                // 콘텐츠 섹션 조정
-                const contentSection = clonedDoc.querySelector('.content-section');
-                if (contentSection) {
-                    contentSection.style.display = 'grid';
-                    contentSection.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                    contentSection.style.gap = '15px';
-                }
-                
-                // 모드 전환 버튼 숨기기
-                const modeSwitcher = clonedDoc.querySelector('.mode-switcher');
-                if (modeSwitcher) modeSwitcher.style.display = 'none';
-                
-                // 그리기 도구 숨기기
-                const drawingTools = clonedDoc.querySelector('.drawing-tools');
-                if (drawingTools) drawingTools.style.display = 'none';
-                
-                // 업로드 플레이스홀더 숨기기
-                const placeholder = clonedDoc.querySelector('.upload-placeholder');
-                if (placeholder && (currentMode === 'draw' || clonedDoc.querySelector('#uploadedImage').style.display !== 'none')) {
-                    placeholder.style.display = 'none';
-                }
-                
-                // 그리기 모드인 경우 캔버스를 이미지로 교체
-                if (currentMode === 'draw' && canvasDataUrl) {
-                    const clonedCanvas = clonedDoc.getElementById('drawingCanvas');
-                    const img = clonedDoc.createElement('img');
-                    img.src = canvasDataUrl;
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.objectFit = 'contain';
-                    clonedCanvas.parentNode.replaceChild(img, clonedCanvas);
-                }
-                
-                // 카메라 모드인 경우 촬영된 사진 처리
-                if (currentMode === 'camera' && capturedPhotoData) {
-                    const imageArea = clonedDoc.getElementById('imageArea');
-                    imageArea.innerHTML = '';
-                    const img = clonedDoc.createElement('img');
-                    img.src = capturedPhotoData;
-                    img.style.width = '100%';
-                    img.style.height = '100%';
-                    img.style.objectFit = 'contain';
-                    imageArea.appendChild(img);
-                }
-                
-                // 카메라 프리뷰 숨기기
-                const cameraPreview = clonedDoc.getElementById('cameraPreview');
-                if (cameraPreview) cameraPreview.style.display = 'none';
-                
-                // 카메라 컨트롤 숨기기
-                const cameraControls = clonedDoc.getElementById('cameraControls');
-                if (cameraControls) cameraControls.style.display = 'none';
-                
-                // textarea 스타일 조정 (PDF용)
-                const textareas = clonedDoc.querySelectorAll('.writing-textarea');
-                textareas.forEach(textarea => {
-                    textarea.style.border = 'none';
-                    textarea.style.resize = 'none';
-                    textarea.style.overflow = 'hidden';
-                    // textarea 높이를 내용에 맞게 자동 조정
-                    if (textarea.value) {
-                        textarea.style.height = 'auto';
-                        textarea.style.height = textarea.scrollHeight + 'px';
-                    }
-                });
-            }
+            width: 1122, // A4 landscape in pixels at 96 DPI
+            height: 794
         },
         jsPDF: { 
             unit: 'mm', 
@@ -1776,18 +1883,25 @@ function downloadPDF() {
     };
     
     // PDF 생성
-    html2pdf().set(opt).from(element).save()
+    html2pdf().set(opt).from(templateWorksheet).save()
         .then(() => {
+            // 템플릿 숨기기
+            templateWorksheet.style.display = 'none';
+            
             // 버튼 복원
-            downloadBtn.disabled = false;
-            downloadBtn.textContent = originalText;
+            templateBtn.disabled = false;
+            templateBtn.textContent = originalText;
         })
         .catch((error) => {
-            console.error('PDF 생성 오류:', error);
-            alert('PDF 생성 중 오류가 발생했습니다. 인쇄 기능을 이용해주세요.');
+            console.error('템플릿 생성 오류:', error);
+            alert('템플릿 생성 중 오류가 발생했습니다.');
+            
+            // 템플릿 숨기기
+            templateWorksheet.style.display = 'none';
+            
             // 버튼 복원
-            downloadBtn.disabled = false;
-            downloadBtn.textContent = originalText;
+            templateBtn.disabled = false;
+            templateBtn.textContent = originalText;
         });
 }
 
