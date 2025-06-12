@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>See Think Wonder 학습지 (이미지 첨부형)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', Arial, sans-serif;
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 0 10px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background: #357abd;
+            transform: translateY(-1px);
+        }
+        
+        .btn.download {
+            background: #28a745;
+        }
+        
+        .btn.download:hover {
+            background: #218838;
+        }
+        
+        .btn.image {
+            background: #9333ea;
+        }
+        
+        .btn.image:hover {
+            background: #7c3aed;
+        }
+        
+        .btn.reset {
+            background: #6c757d;
+        }
+        
+        .btn.reset:hover {
+            background: #5a6268;
+        }
+        
+        .worksheet {
+            width: 100%;
+            max-width: 297mm;
+            min-height: 190mm;
+            margin: 0 auto;
+            background: white;
+            padding: 12mm;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .title {
+            background: #4a90e2;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+        
+        @media (max-width: 480px) {
+            .title {
+                font-size: 18px;
+                padding: 10px;
+                width: 100%;
+                text-align: center;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .title {
+                font-size: 16px;
+                padding: 8px;
+                letter-spacing: -0.5px;
+            }
+        }
+        
+        .student-info {
+            display: flex;
+            justify-content: flex-end;
+            gap: 25px;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        
+        .info-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-field label {
+            font-weight: bold;
+            min-width: 40px;
+        }
+        
+        .info-field .line {
+            width: 60px;
+            height: 1px;
+            background: #333;
+            border: none;
+            border-bottom: 2px solid #333;
+            display: inline-block;
+        }
+        
+        @media (max-width: 768px) {
+            .student-info {
+                font-size: 14px;
+            }
+            
+            .info-field .line {
+                width: 80px;
+            }
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            min-height: 350px;
+        }
+        
+        /* 이미지 영역 스타일 */
+        .image-section {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            min-width: 280px;
+        }
+        
+        .image-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .image-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .mode-switcher {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+        
+        .mode-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        
+        .mode-btn.active {
+            background: #4a90e2;
+            color: white;
+            border-color: #4a90e2;
+        }
+        
+        /* 버튼 텍스트 반응형 처리 */
+        .btn-text-short {
+            display: none;
+        }
+        
+        .title-short {
+            display: none;
+        }
+        
+        .btn-icon {
+            display: inline-block;
+            margin-right: 4px;
+        }
+        
+        @media (max-width: 480px) {
+            .btn-text-full {
+                display: none;
+            }
+            .btn-text-short {
+                display: inline;
+            }
+            .title-full {
+                display: none;
+            }
+            .title-short {
+                display: inline;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .btn-text-short {
+                display: none;
+            }
+            .btn-icon {
+                margin-right: 0;
+                font-size: 18px;
+            }
+        }
+        
+        .image-area {
+            background: white;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            width: 100%;
+            height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .image-area.dragover {
+            border-color: #4a90e2;
+            background: #f0f7ff;
+        }
+        
+        .upload-placeholder {
+            text-align: center;
+            color: #999;
+        }
+        
+        .upload-placeholder p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #ccc;
+        }
+        
+        .uploaded-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        #drawingCanvas {
+            display: none;
+            cursor: crosshair;
+            background: white;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .drawing-tools {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .color-palette {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+        
+        .color-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            cursor: pointer;
+        }
+        
+        .color-btn.active {
+            border-color: #333;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #333;
+        }
+        
+        .tool-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .tool-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .brush-size {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+        }
+        
+        .size-btn {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #666;
+            border: 2px solid #ddd;
+            cursor: pointer;
+        }
+        
+        .size-btn.small { width: 12px; height: 12px; }
+        .size-btn.medium { width: 16px; height: 16px; }
+        .size-btn.large { width: 20px; height: 20px; }
+        .size-btn.active { border-color: #4a90e2; }
+        
+        .camera-controls {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .camera-controls .tool-btn {
+            margin: 0 5px;
+        }
+        
+        @media (max-width: 480px) {
+            .camera-controls {
+                padding: 8px;
+            }
+            
+            .camera-controls .tool-btn {
+                margin: 2px;
+                font-size: 12px;
+                padding: 6px 10px;
+            }
+        }
+        
+        #cameraPreview {
+            background: #000;
+            border-radius: 8px;
+        }
+        
+        .captured-photo {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .caption-input {
+            margin-top: 10px;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        /* 우측 콘텐츠 영역 */
+        .content-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .section.see {
+            border-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .section.think {
+            border-color: #ffc107;
+            background: #fffef5;
+        }
+        
+        .section.wonder {
+            border-color: #dc3545;
+            background: #fff8f8;
+        }
+        
+        .section-header {
+            margin-bottom: 12px;
+        }
+        
+        .section-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .section-question {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+        
+        .section.see .writing-area:has(.writing-textarea:focus) {
+            border-color: #28a745;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+        }
+        
+        .section.think .writing-area:has(.writing-textarea:focus) {
+            border-color: #ffc107;
+            box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+        }
+        
+        .section.wonder .writing-area:has(.writing-textarea:focus) {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+        }
+        
+        .writing-area {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            flex: 1;
+            min-height: 180px;
+            padding: 0;
+            text-align: left;
+            overflow: hidden;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .section.see .writing-area:focus-within {
+            border-color: #28a745;
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+        }
+        
+        .section.think .writing-area:focus-within {
+            border-color: #ffc107;
+            box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.2);
+        }
+        
+        .section.wonder .writing-area:focus-within {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+        }
+        
+        .writing-textarea {
+            width: 100%;
+            height: 100%;
+            min-height: 180px;
+            padding: 12px;
+            border: none;
+            outline: none;
+            resize: none;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            background: transparent;
+            transition: background-color 0.2s;
+        }
+        
+        .writing-textarea:focus {
+            background-color: #f8f9fa;
+        }
+        
+        .writing-textarea::placeholder {
+            color: #999;
+            font-style: italic;
+        }
+        
+        .footer {
+            margin-top: 15px;
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+        
+        .footer .tip {
+            margin-top: 5px;
+            font-style: italic;
+            color: #999;
+        }
+        
+        /* 파일 입력 숨기기 */
+        #fileInput {
+            display: none;
+        }
+        
+        /* 인쇄 전용 스타일 */
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+                margin: 0;
+            }
+            
+            .controls {
+                display: none !important;
+            }
+            
+            .worksheet {
+                width: 100%;
+                max-width: none;
+                height: 100vh;
+                min-height: auto;
+                margin: 0;
+                padding: 10mm;
+                box-shadow: none;
+                border-radius: 0;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+                page-break-before: avoid;
+            }
+            
+            .main-container {
+                display: grid !important;
+                grid-template-columns: 250px 1fr !important;
+                gap: 15px !important;
+                page-break-inside: avoid !important;
+            }
+            
+            .image-section {
+                page-break-inside: avoid !important;
+            }
+            
+            .content-section {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 15px !important;
+                page-break-inside: avoid !important;
+            }
+            
+            .section {
+                page-break-inside: avoid !important;
+            }
+            
+            .writing-area {
+                min-height: 150px !important;
+                page-break-inside: avoid !important;
+            }
+            
+            .writing-textarea {
+                min-height: 150px !important;
+                border: none !important;
+                resize: none !important;
+            }
+            
+            .mode-switcher {
+                display: none !important;
+            }
+            
+            .drawing-tools {
+                display: none !important;
+            }
+            
+            .camera-controls {
+                display: none !important;
+            }
+            
+            #cameraPreview {
+                display: none !important;
+            }
+            
+            .upload-placeholder {
+                display: none !important;
+            }
+            
+            .image-area {
+                border-style: solid !important;
+                height: 250px !important;
+            }
+            
+            #drawingCanvas {
+                height: 250px !important;
+            }
+            
+            .footer {
+                page-break-inside: avoid !important;
+            }
+            
+            .footer .tip {
+                display: none !important;
+            }
+        }
+        
+        /* 반응형 디자인 */
+        @media (max-width: 1200px) {
+            .worksheet {
+                width: 100%;
+                max-width: 1100px;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .image-section {
+                order: -1;
+                margin-bottom: 20px;
+            }
+            
+            .content-section {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .writing-textarea {
+                min-height: 150px;
+            }
+            
+            .mode-switcher {
+                flex-direction: column;
+                gap: 8px;
+            }
+            
+            .mode-btn {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+        
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .mode-switcher {
+                flex-direction: row;
+                flex-wrap: nowrap;
+            }
+            
+            .mode-btn {
+                flex: 1;
+                font-size: 13px;
+                padding: 8px 10px;
+            }
+            
+            /* 768px에서 1024px 사이에서는 짧은 텍스트 사용 */
+            .btn-text-full {
+                display: none;
+            }
+            .btn-text-short {
+                display: inline;
+            }
+        }
+        
+        @media (min-width: 360px) and (max-width: 480px) {
+            .mode-switcher {
+                flex-direction: row;
+                gap: 8px;
+            }
+            
+            .mode-btn {
+                flex: 1;
+                padding: 8px 10px;
+            }
+        }
+        
+        @media (min-width: 481px) and (max-width: 767px) {
+            .mode-switcher {
+                flex-direction: row;
+                gap: 5px;
+            }
+            
+            .mode-btn {
+                flex: 1;
+                padding: 8px 6px;
+                font-size: 12px;
+                min-width: auto;
+            }
+            
+            .btn-text-full {
+                display: none;
+            }
+            
+            .btn-text-short {
+                display: inline;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .btn {
+                width: 100%;
+            }
+            
+            .worksheet {
+                padding: 15px;
+            }
+            
+            .main-container {
+                gap: 15px;
+            }
+            
+            .image-section {
+                padding: 12px;
+                min-width: auto;
+            }
+            
+            .image-area {
+                height: 250px;
+            }
+            
+            .mode-switcher {
+                flex-direction: column;
+            }
+            
+            .mode-btn {
+                width: 100%;
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .student-info {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+            
+            .info-field {
+                width: 100%;
+            }
+            
+            .info-field .line {
+                flex: 1;
+                max-width: none;
+            }
+            
+            .section-title {
+                font-size: 16px;
+            }
+            
+            .section-icon {
+                font-size: 32px;
+            }
+            
+            .image-title {
+                font-size: 16px;
+            }
+        }
+        
+        /* 매우 작은 화면 (360px 이하) */
+        @media (max-width: 360px) {
+            .worksheet {
+                padding: 10px;
+            }
+            
+            .header {
+                margin-bottom: 10px;
+            }
+            
+            .title {
+                font-size: 16px;
+                padding: 8px;
+            }
+            
+            .student-info {
+                font-size: 13px;
+            }
+            
+            .image-section {
+                padding: 10px;
+            }
+            
+            .image-title {
+                font-size: 15px;
+            }
+            
+            .mode-switcher {
+                gap: 5px;
+            }
+            
+            .mode-btn {
+                font-size: 12px;
+                padding: 8px;
+                min-width: 50px;
+            }
+            
+            .section {
+                padding: 10px;
+            }
+            
+            .section-icon {
+                font-size: 28px;
+                margin-bottom: 5px;
+            }
+            
+            .section-title {
+                font-size: 15px;
+                margin-bottom: 5px;
+            }
+            
+            .section-question {
+                font-size: 12px;
+            }
+            
+            .section-question-ko {
+                font-size: 12px;
+                margin-bottom: 10px;
+            }
+            
+            .writing-textarea {
+                font-size: 13px;
+                min-height: 120px;
+            }
+            
+            .writing-textarea::placeholder {
+                font-size: 12px;
+            }
+            
+            .btn {
+                font-size: 12px;
+                padding: 8px 12px;
+            }
+            
+            /* 그리기 도구 반응형 */
+            .drawing-tools {
+                padding: 8px;
+            }
+            
+            .color-palette {
+                gap: 5px;
+            }
+            
+            .color-btn {
+                width: 25px;
+                height: 25px;
+            }
+            
+            .tool-controls {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .brush-size {
+                font-size: 12px;
+            }
+            
+            .size-btn.small { width: 10px; height: 10px; }
+            .size-btn.medium { width: 14px; height: 14px; }
+            .size-btn.large { width: 18px; height: 18px; }
+            
+            .tool-btn {
+                font-size: 12px;
+                padding: 4px 8px;
+            }
+            
+            /* 업로드 플레이스홀더 */
+            .upload-placeholder p {
+                font-size: 12px;
+            }
+            
+            .upload-icon {
+                font-size: 36px;
+            }
+            
+            /* 팁 숨기기 */
+            .footer .tip {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="controls">
+    <button class="btn" onclick="printWorksheet()">🖨️ 인쇄하기</button>
+    <button class="btn download" id="downloadBtn" onclick="downloadPDF()">📄 PDF 다운로드</button>
+    <button class="btn image" id="imageBtn" onclick="downloadImage()">🖼️ 이미지 다운로드</button>
+    <button class="btn reset" onclick="clearAllData()">🗑️ 초기화</button>
+</div>
+
+<div class="worksheet" id="worksheet">
+    <div class="header">
+        <div class="title">See Think Wonder</div>
+    </div>
+    
+    <div class="student-info">
+        <div class="info-field">
+            <label>학반:</label>
+            <div class="line"></div>
+        </div>
+        <div class="info-field">
+            <label>번호:</label>
+            <div class="line"></div>
+        </div>
+        <div class="info-field">
+            <label>이름:</label>
+            <div class="line"></div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="image-section">
+            <div class="image-header">
+                <div class="image-title">
+                    <span class="title-full">📸 관찰 대상</span>
+                    <span class="title-short">📸 대상</span>
+                </div>
+                <div class="mode-switcher">
+                    <button class="mode-btn active" onclick="switchMode('upload')">
+                        <span class="btn-icon">📤</span>
+                        <span class="btn-text-full">사진 업로드</span>
+                        <span class="btn-text-short">업로드</span>
+                    </button>
+                    <button class="mode-btn" onclick="switchMode('draw')">
+                        <span class="btn-icon">✏️</span>
+                        <span class="btn-text-full">그림 그리기</span>
+                        <span class="btn-text-short">그리기</span>
+                    </button>
+                    <button class="mode-btn" onclick="switchMode('camera')">
+                        <span class="btn-icon">📷</span>
+                        <span class="btn-text-full">사진 촬영</span>
+                        <span class="btn-text-short">촬영</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="image-area" id="imageArea">
+                <div class="upload-placeholder" id="uploadPlaceholder">
+                    <div class="upload-icon">📷</div>
+                    <p>이미지를 드래그하여 놓으세요</p>
+                    <p>또는 <button class="tool-btn" onclick="document.getElementById('fileInput').click()">파일 선택</button></p>
+                </div>
+                <canvas id="drawingCanvas" style="width: 100%; height: 100%;"></canvas>
+                <video id="cameraPreview" style="display: none; width: 100%; height: 100%; object-fit: cover;"></video>
+                <img id="uploadedImage" class="uploaded-image" style="display: none;">
+            </div>
+            
+            <div class="drawing-tools" id="drawingTools">
+                <div class="color-palette">
+                    <div class="color-btn active" style="background: black" onclick="setColor('black')"></div>
+                    <div class="color-btn" style="background: #2563eb" onclick="setColor('#2563eb')"></div>
+                    <div class="color-btn" style="background: #dc2626" onclick="setColor('#dc2626')"></div>
+                    <div class="color-btn" style="background: #16a34a" onclick="setColor('#16a34a')"></div>
+                    <div class="color-btn" style="background: #facc15" onclick="setColor('#facc15')"></div>
+                </div>
+                <div class="tool-controls">
+                    <div class="brush-size">
+                        <span style="font-size: 14px;">굵기:</span>
+                        <div class="size-btn small" onclick="setBrushSize(2)"></div>
+                        <div class="size-btn medium active" onclick="setBrushSize(5)"></div>
+                        <div class="size-btn large" onclick="setBrushSize(10)"></div>
+                    </div>
+                    <button class="tool-btn" onclick="toggleEraser()">지우개</button>
+                    <button class="tool-btn" onclick="clearCanvas()">전체 지우기</button>
+                </div>
+            </div>
+            
+            <div class="camera-controls" id="cameraControls" style="display: none;">
+                <button class="tool-btn" onclick="startCamera()" id="startCameraBtn">📷 카메라 시작</button>
+                <button class="tool-btn" onclick="capturePhoto()" id="captureBtn" style="display: none; background: #dc2626; color: white;">📸 촬영</button>
+                <button class="tool-btn" onclick="switchCamera()" id="switchCameraBtn" style="display: none;">🔄 카메라 전환</button>
+                <button class="tool-btn" onclick="retakePhoto()" id="retakeBtn" style="display: none;">다시 찍기</button>
+            </div>
+            
+            <input type="text" class="caption-input" placeholder="제목 또는 설명을 입력하세요" tabindex="4">
+            <input type="file" id="fileInput" accept="image/*" onchange="handleFileSelect(event)">
+        </div>
+        
+        <div class="content-section">
+            <div class="section see">
+                <div class="section-header">
+                    <span class="section-icon">👀</span>
+                    <div class="section-title">SEE</div>
+                    <div class="section-question">What do you see?</div>
+                    <div class="section-question-ko">무엇이 보이나요?</div>
+                </div>
+                <div class="writing-area">
+                    <textarea class="writing-textarea" placeholder="무엇이 보이나요? 관찰한 내용을 자세히 적어보세요..." tabindex="1"></textarea>
+                </div>
+            </div>
+            
+            <div class="section think">
+                <div class="section-header">
+                    <span class="section-icon">🤔</span>
+                    <div class="section-title">THINK</div>
+                    <div class="section-question">What do you think is going on?</div>
+                    <div class="section-question-ko">무슨 일이 일어나고 있다고 생각하나요?</div>
+                </div>
+                <div class="writing-area">
+                    <textarea class="writing-textarea" placeholder="무슨 일이 일어나고 있다고 생각하나요? 생각을 자유롭게 적어보세요..." tabindex="2"></textarea>
+                </div>
+            </div>
+            
+            <div class="section wonder">
+                <div class="section-header">
+                    <span class="section-icon">❓</span>
+                    <div class="section-title">WONDER</div>
+                    <div class="section-question">What does it make you wonder?</div>
+                    <div class="section-question-ko">무엇이 궁금한가요?</div>
+                </div>
+                <div class="writing-area">
+                    <textarea class="writing-textarea" placeholder="무엇이 궁금한가요? 더 알고 싶은 점을 적어보세요..." tabindex="3"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        하버드 프로젝트 제로(Project Zero) - Visible Thinking 사고 루틴
+        <div class="tip">💡 Tip: Ctrl+Enter로 다음 칸으로 이동 | 작성 내용은 자동 저장됩니다</div>
+    </div>
+</div>
+
+<script>
+// 전역 변수
+let currentMode = 'upload';
+let canvas = null;
+let ctx = null;
+let isDrawing = false;
+let currentColor = 'black';
+let currentSize = 5;
+let isEraser = false;
+let stream = null; // 카메라 스트림
+let capturedPhotoData = null; // 촬영된 사진 데이터
+let facingMode = 'environment'; // 카메라 방향 (environment: 후면, user: 전면)
+
+// 초기화
+window.onload = function() {
+    canvas = document.getElementById('drawingCanvas');
+    ctx = canvas.getContext('2d');
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    
+    setupCanvasEvents();
+    setupDragDrop();
+    setupTextareas();
+    
+    // 캔버스 초기 크기 설정
+    setTimeout(() => {
+        resizeCanvas();
+    }, 100);
+    
+    // 윈도우 리사이즈 시 캔버스 크기 재조정
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            if (currentMode === 'draw') {
+                resizeCanvas();
+            }
+        }, 250);
+    });
+};
+
+// 캔버스 크기 조정 함수
+function resizeCanvas() {
+    const imageArea = document.getElementById('imageArea');
+    if (imageArea && canvas) {
+        // 컨테이너 크기에 맞춰 캔버스 크기 설정
+        const width = imageArea.offsetWidth - 4;
+        const height = imageArea.offsetHeight - 4;
+        
+        // 캔버스 실제 크기 설정
+        canvas.width = width;
+        canvas.height = height;
+        
+        // 스타일 크기도 동일하게 설정
+        canvas.style.width = width + 'px';
+        canvas.style.height = height + 'px';
+    }
+}
+
+// Textarea 자동 높이 조정 설정
+function setupTextareas() {
+    const textareas = document.querySelectorAll('.writing-textarea');
+    textareas.forEach((textarea, index) => {
+        // 입력 시 높이 자동 조정 및 자동 저장
+        textarea.addEventListener('input', function() {
+            autoResizeTextarea(this);
+            saveFormData();
+        });
+        
+        // Ctrl+Enter로 다음 텍스트 영역으로 이동
+        textarea.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                const nextIndex = index + 1;
+                if (nextIndex < textareas.length) {
+                    textareas[nextIndex].focus();
+                } else {
+                    // 마지막 textarea에서는 캡션 입력란으로 이동
+                    document.querySelector('.caption-input').focus();
+                }
+            }
+        });
+        
+        // 초기 높이 설정
+        autoResizeTextarea(textarea);
+    });
+    
+    // 캡션 입력란도 자동 저장
+    const captionInput = document.querySelector('.caption-input');
+    if (captionInput) {
+        captionInput.addEventListener('input', saveFormData);
+    }
+    
+    // 저장된 데이터 불러오기
+    loadFormData();
+}
+
+// 폼 데이터 저장
+function saveFormData() {
+    const formData = {
+        see: document.querySelectorAll('.writing-textarea')[0].value,
+        think: document.querySelectorAll('.writing-textarea')[1].value,
+        wonder: document.querySelectorAll('.writing-textarea')[2].value,
+        caption: document.querySelector('.caption-input').value
+    };
+    localStorage.setItem('seeThinkWonderData', JSON.stringify(formData));
+}
+
+// 폼 데이터 불러오기
+function loadFormData() {
+    const savedData = localStorage.getItem('seeThinkWonderData');
+    if (savedData) {
+        const formData = JSON.parse(savedData);
+        const textareas = document.querySelectorAll('.writing-textarea');
+        
+        if (formData.see) textareas[0].value = formData.see;
+        if (formData.think) textareas[1].value = formData.think;
+        if (formData.wonder) textareas[2].value = formData.wonder;
+        if (formData.caption) document.querySelector('.caption-input').value = formData.caption;
+        
+        // 높이 재조정
+        textareas.forEach(textarea => autoResizeTextarea(textarea));
+    }
+}
+
+// Textarea 높이 자동 조정
+function autoResizeTextarea(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.max(180, textarea.scrollHeight) + 'px';
+}
+
+// 모드 전환
+function switchMode(mode) {
+    currentMode = mode;
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    modeBtns.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+    const uploadedImage = document.getElementById('uploadedImage');
+    const drawingCanvas = document.getElementById('drawingCanvas');
+    const drawingTools = document.getElementById('drawingTools');
+    const cameraPreview = document.getElementById('cameraPreview');
+    const cameraControls = document.getElementById('cameraControls');
+    
+    // 카메라 스트림 정지
+    if (stream && mode !== 'camera') {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+    
+    if (mode === 'upload') {
+        uploadPlaceholder.style.display = uploadedImage.style.display === 'none' ? 'block' : 'none';
+        drawingCanvas.style.display = 'none';
+        drawingTools.style.display = 'none';
+        cameraPreview.style.display = 'none';
+        cameraControls.style.display = 'none';
+    } else if (mode === 'draw') {
+        uploadPlaceholder.style.display = 'none';
+        uploadedImage.style.display = 'none';
+        drawingCanvas.style.display = 'block';
+        drawingTools.style.display = 'block';
+        cameraPreview.style.display = 'none';
+        cameraControls.style.display = 'none';
+        
+        // 그리기 모드로 전환 시 캔버스 크기 조정
+        setTimeout(() => {
+            resizeCanvas();
+            // ctx 재설정
+            ctx = canvas.getContext('2d');
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }, 100);
+    } else if (mode === 'camera') {
+        uploadPlaceholder.style.display = 'none';
+        uploadedImage.style.display = 'none';
+        drawingCanvas.style.display = 'none';
+        drawingTools.style.display = 'none';
+        cameraPreview.style.display = 'block';
+        cameraControls.style.display = 'block';
+        
+        // 촬영된 사진이 있으면 표시
+        if (capturedPhotoData) {
+            showCapturedPhoto();
+        }
+    }
+}
+
+// 드래그 앤 드롭 설정
+function setupDragDrop() {
+    const imageArea = document.getElementById('imageArea');
+    
+    imageArea.addEventListener('dragover', (e) => {
+        if (currentMode === 'upload') {
+            e.preventDefault();
+            imageArea.classList.add('dragover');
+        }
+    });
+    
+    imageArea.addEventListener('dragleave', () => {
+        imageArea.classList.remove('dragover');
+    });
+    
+    imageArea.addEventListener('drop', (e) => {
+        if (currentMode === 'upload') {
+            e.preventDefault();
+            imageArea.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                handleImageUpload(files[0]);
+            }
+        }
+    });
+}
+
+// 카메라 시작
+async function startCamera() {
+    try {
+        const video = document.getElementById('cameraPreview');
+        const startBtn = document.getElementById('startCameraBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const switchBtn = document.getElementById('switchCameraBtn');
+        const retakeBtn = document.getElementById('retakeBtn');
+        
+        // 기존 스트림이 있으면 정지
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        
+        // 카메라 권한 요청
+        stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { 
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                facingMode: facingMode
+            } 
+        });
+        
+        video.srcObject = stream;
+        video.play();
+        
+        // 버튼 상태 변경
+        startBtn.style.display = 'none';
+        captureBtn.style.display = 'inline-block';
+        
+        // 모바일 기기에서만 카메라 전환 버튼 표시
+        if (navigator.mediaDevices.getSupportedConstraints().facingMode) {
+            switchBtn.style.display = 'inline-block';
+        }
+        
+        retakeBtn.style.display = 'none';
+        
+        capturedPhotoData = null;
+    } catch (error) {
+        console.error('카메라 접근 오류:', error);
+        alert('카메라 접근이 거부되었거나 카메라를 찾을 수 없습니다.');
+    }
+}
+
+// 카메라 전환
+async function switchCamera() {
+    facingMode = facingMode === 'environment' ? 'user' : 'environment';
+    await startCamera();
+}
+
+// 사진 촬영
+function capturePhoto() {
+    const video = document.getElementById('cameraPreview');
+    const imageArea = document.getElementById('imageArea');
+    const captureBtn = document.getElementById('captureBtn');
+    const switchBtn = document.getElementById('switchCameraBtn');
+    const retakeBtn = document.getElementById('retakeBtn');
+    
+    // 임시 캔버스 생성
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = video.videoWidth;
+    tempCanvas.height = video.videoHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    // 비디오 프레임을 캔버스에 그리기
+    tempCtx.drawImage(video, 0, 0);
+    
+    // 이미지 데이터 저장
+    capturedPhotoData = tempCanvas.toDataURL('image/png');
+    
+    // 촬영된 사진 표시
+    showCapturedPhoto();
+    
+    // 카메라 스트림 정지
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+    }
+    
+    // 버튼 상태 변경
+    captureBtn.style.display = 'none';
+    switchBtn.style.display = 'none';
+    retakeBtn.style.display = 'inline-block';
+}
+
+// 촬영된 사진 표시
+function showCapturedPhoto() {
+    const imageArea = document.getElementById('imageArea');
+    const cameraPreview = document.getElementById('cameraPreview');
+    
+    // 기존 촬영 이미지가 있으면 제거
+    const existingPhoto = imageArea.querySelector('.captured-photo');
+    if (existingPhoto) {
+        existingPhoto.remove();
+    }
+    
+    // 촬영된 사진 표시
+    const img = document.createElement('img');
+    img.src = capturedPhotoData;
+    img.className = 'captured-photo';
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'contain';
+    img.style.position = 'absolute';
+    img.style.top = '0';
+    img.style.left = '0';
+    
+    imageArea.appendChild(img);
+    cameraPreview.style.display = 'none';
+}
+
+// 다시 찍기
+function retakePhoto() {
+    const cameraPreview = document.getElementById('cameraPreview');
+    const retakeBtn = document.getElementById('retakeBtn');
+    
+    // 촬영된 사진 제거
+    capturedPhotoData = null;
+    
+    // 촬영된 이미지 요소가 있으면 제거
+    const capturedImg = document.querySelector('.captured-photo');
+    if (capturedImg) {
+        capturedImg.remove();
+    }
+    
+    // 카메라 프리뷰 다시 표시
+    cameraPreview.style.display = 'block';
+    
+    // 버튼 숨기기 (startCamera에서 다시 설정됨)
+    retakeBtn.style.display = 'none';
+    
+    // 카메라 다시 시작
+    startCamera();
+}
+
+// 페이지 종료 시 카메라 스트림 정지
+window.addEventListener('beforeunload', () => {
+    if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+    }
+});
+
+// 모든 데이터 초기화
+function clearAllData() {
+    if (confirm('모든 내용을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+        // textarea 초기화
+        document.querySelectorAll('.writing-textarea').forEach(textarea => {
+            textarea.value = '';
+            autoResizeTextarea(textarea);
+        });
+        
+        // 캡션 초기화
+        document.querySelector('.caption-input').value = '';
+        
+        // 이미지 초기화
+        document.getElementById('uploadedImage').src = '';
+        document.getElementById('uploadedImage').style.display = 'none';
+        document.getElementById('uploadPlaceholder').style.display = 'block';
+        
+        // 캔버스 초기화
+        if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // 카메라 모드 초기화
+        capturedPhotoData = null;
+        const capturedPhoto = document.querySelector('.captured-photo');
+        if (capturedPhoto) {
+            capturedPhoto.remove();
+        }
+        
+        // 저장된 데이터 삭제
+        localStorage.removeItem('seeThinkWonderData');
+        
+        // 첫 번째 모드로 전환
+        const firstModeBtn = document.querySelector('.mode-btn');
+        if (firstModeBtn) {
+            firstModeBtn.click();
+        }
+        
+        alert('모든 내용이 초기화되었습니다.');
+    }
+}
+
+// 파일 선택 처리
+function handleFileSelect(event) {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        handleImageUpload(file);
+    }
+}
+
+// 이미지 업로드 처리
+function handleImageUpload(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const uploadedImage = document.getElementById('uploadedImage');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        
+        uploadedImage.src = e.target.result;
+        uploadedImage.style.display = 'block';
+        uploadPlaceholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+// 캔버스 이벤트 설정
+function setupCanvasEvents() {
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+    
+    // 터치 이벤트 지원
+    canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const mouseEvent = new MouseEvent('mousedown', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    });
+    
+    canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const mouseEvent = new MouseEvent('mousemove', {
+            clientX: touch.clientX,
+            clientY: touch.clientY
+        });
+        canvas.dispatchEvent(mouseEvent);
+    });
+    
+    canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        const mouseEvent = new MouseEvent('mouseup', {});
+        canvas.dispatchEvent(mouseEvent);
+    });
+}
+
+// 그리기 시작
+function startDrawing(e) {
+    isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+}
+
+// 그리기
+function draw(e) {
+    if (!isDrawing) return;
+    
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
+    ctx.strokeStyle = currentColor;
+    ctx.lineWidth = currentSize;
+    
+    ctx.lineTo(x, y);
+    ctx.stroke();
+}
+
+// 그리기 종료
+function stopDrawing() {
+    isDrawing = false;
+}
+
+// 색상 설정
+function setColor(color) {
+    currentColor = color;
+    isEraser = false;
+    
+    document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+// 브러시 크기 설정
+function setBrushSize(size) {
+    currentSize = size;
+    
+    document.querySelectorAll('.size-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+// 지우개 토글
+function toggleEraser() {
+    isEraser = !isEraser;
+    event.target.textContent = isEraser ? '펜' : '지우개';
+    
+    if (isEraser) {
+        document.querySelectorAll('.color-btn').forEach(btn => btn.classList.remove('active'));
+    }
+}
+
+// 캔버스 전체 지우기
+function clearCanvas() {
+    if (confirm('그림을 모두 지우시겠습니까?')) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+}
+
+// 인쇄 기능
+function printWorksheet() {
+    // 인쇄 전 스타일 적용
+    const style = document.createElement('style');
+    style.textContent = `
+        @media print {
+            @page {
+                size: A4 landscape !important;
+                margin: 10mm !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // 인쇄 실행
+    window.print();
+    
+    // 인쇄 후 스타일 제거
+    setTimeout(() => {
+        document.head.removeChild(style);
+    }, 100);
+}
+
+// PDF 다운로드
+function downloadPDF() {
+    // 버튼 비활성화
+    const downloadBtn = document.getElementById('downloadBtn');
+    const originalText = downloadBtn.textContent;
+    downloadBtn.disabled = true;
+    downloadBtn.textContent = '⏳ PDF 생성 중...';
+    
+    const element = document.getElementById('worksheet');
+    
+    // 현재 모드가 그리기 모드인 경우 캔버스를 이미지로 변환
+    let canvasDataUrl = null;
+    if (currentMode === 'draw') {
+        const canvas = document.getElementById('drawingCanvas');
+        canvasDataUrl = canvas.toDataURL('image/png');
+    }
+    
+    const opt = {
+        margin: [5, 10, 5, 10],
+        filename: 'See-Think-Wonder_학습지.pdf',
+        image: { 
+            type: 'jpeg', 
+            quality: 0.95 
+        },
+        html2canvas: { 
+            scale: 1.5,
+            useCORS: true,
+            logging: false,
+            letterRendering: true,
+            allowTaint: true,
+            backgroundColor: '#ffffff',
+            onclone: function(clonedDoc) {
+                // 복제된 문서에서 스타일 조정
+                const clonedElement = clonedDoc.getElementById('worksheet');
+                clonedElement.style.width = '1050px';
+                clonedElement.style.maxWidth = 'none';
+                clonedElement.style.margin = '0';
+                clonedElement.style.boxShadow = 'none';
+                clonedElement.style.padding = '30px';
+                
+                // 메인 컨테이너 조정
+                const mainContainer = clonedDoc.querySelector('.main-container');
+                if (mainContainer) {
+                    mainContainer.style.display = 'grid';
+                    mainContainer.style.gridTemplateColumns = '280px 1fr';
+                    mainContainer.style.gap = '20px';
+                }
+                
+                // 콘텐츠 섹션 조정
+                const contentSection = clonedDoc.querySelector('.content-section');
+                if (contentSection) {
+                    contentSection.style.display = 'grid';
+                    contentSection.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                    contentSection.style.gap = '15px';
+                }
+                
+                // 모드 전환 버튼 숨기기
+                const modeSwitcher = clonedDoc.querySelector('.mode-switcher');
+                if (modeSwitcher) modeSwitcher.style.display = 'none';
+                
+                // 그리기 도구 숨기기
+                const drawingTools = clonedDoc.querySelector('.drawing-tools');
+                if (drawingTools) drawingTools.style.display = 'none';
+                
+                // 업로드 플레이스홀더 숨기기
+                const placeholder = clonedDoc.querySelector('.upload-placeholder');
+                if (placeholder && (currentMode === 'draw' || clonedDoc.querySelector('#uploadedImage').style.display !== 'none')) {
+                    placeholder.style.display = 'none';
+                }
+                
+                // 그리기 모드인 경우 캔버스를 이미지로 교체
+                if (currentMode === 'draw' && canvasDataUrl) {
+                    const clonedCanvas = clonedDoc.getElementById('drawingCanvas');
+                    const img = clonedDoc.createElement('img');
+                    img.src = canvasDataUrl;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'contain';
+                    clonedCanvas.parentNode.replaceChild(img, clonedCanvas);
+                }
+                
+                // 카메라 모드인 경우 촬영된 사진 처리
+                if (currentMode === 'camera' && capturedPhotoData) {
+                    const imageArea = clonedDoc.getElementById('imageArea');
+                    imageArea.innerHTML = '';
+                    const img = clonedDoc.createElement('img');
+                    img.src = capturedPhotoData;
+                    img.style.width = '100%';
+                    img.style.height = '100%';
+                    img.style.objectFit = 'contain';
+                    imageArea.appendChild(img);
+                }
+                
+                // 카메라 프리뷰 숨기기
+                const cameraPreview = clonedDoc.getElementById('cameraPreview');
+                if (cameraPreview) cameraPreview.style.display = 'none';
+                
+                // 카메라 컨트롤 숨기기
+                const cameraControls = clonedDoc.getElementById('cameraControls');
+                if (cameraControls) cameraControls.style.display = 'none';
+                
+                // textarea 스타일 조정 (PDF용)
+                const textareas = clonedDoc.querySelectorAll('.writing-textarea');
+                textareas.forEach(textarea => {
+                    textarea.style.border = 'none';
+                    textarea.style.resize = 'none';
+                    textarea.style.overflow = 'hidden';
+                    // textarea 높이를 내용에 맞게 자동 조정
+                    if (textarea.value) {
+                        textarea.style.height = 'auto';
+                        textarea.style.height = textarea.scrollHeight + 'px';
+                    }
+                });
+            }
+        },
+        jsPDF: { 
+            unit: 'mm', 
+            format: 'a4', 
+            orientation: 'landscape' 
+        }
+    };
+    
+    // PDF 생성
+    html2pdf().set(opt).from(element).save()
+        .then(() => {
+            // 버튼 복원
+            downloadBtn.disabled = false;
+            downloadBtn.textContent = originalText;
+        })
+        .catch((error) => {
+            console.error('PDF 생성 오류:', error);
+            alert('PDF 생성 중 오류가 발생했습니다. 인쇄 기능을 이용해주세요.');
+            // 버튼 복원
+            downloadBtn.disabled = false;
+            downloadBtn.textContent = originalText;
+        });
+}
+
+// 이미지 다운로드
+function downloadImage() {
+    // 버튼 비활성화
+    const imageBtn = document.getElementById('imageBtn');
+    const originalText = imageBtn.textContent;
+    imageBtn.disabled = true;
+    imageBtn.textContent = '⏳ 이미지 생성 중...';
+    
+    const element = document.getElementById('worksheet');
+    
+    // 현재 모드가 그리기 모드인 경우 캔버스를 이미지로 변환
+    let canvasDataUrl = null;
+    if (currentMode === 'draw') {
+        const canvas = document.getElementById('drawingCanvas');
+        canvasDataUrl = canvas.toDataURL('image/png');
+    }
+    
+    // html2canvas 옵션
+    const options = {
+        scale: 2, // 고해상도
+        useCORS: true,
+        logging: false,
+        letterRendering: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        onclone: function(clonedDoc) {
+            // 복제된 문서에서 스타일 조정
+            const clonedElement = clonedDoc.getElementById('worksheet');
+            clonedElement.style.width = '1050px';
+            clonedElement.style.maxWidth = 'none';
+            clonedElement.style.margin = '0';
+            clonedElement.style.boxShadow = 'none';
+            clonedElement.style.padding = '30px';
+            
+            // 메인 컨테이너 조정
+            const mainContainer = clonedDoc.querySelector('.main-container');
+            if (mainContainer) {
+                mainContainer.style.display = 'grid';
+                mainContainer.style.gridTemplateColumns = '280px 1fr';
+                mainContainer.style.gap = '20px';
+            }
+            
+            // 콘텐츠 섹션 조정
+            const contentSection = clonedDoc.querySelector('.content-section');
+            if (contentSection) {
+                contentSection.style.display = 'grid';
+                contentSection.style.gridTemplateColumns = 'repeat(3, 1fr)';
+                contentSection.style.gap = '15px';
+            }
+            
+            // 모드 전환 버튼 숨기기
+            const modeSwitcher = clonedDoc.querySelector('.mode-switcher');
+            if (modeSwitcher) modeSwitcher.style.display = 'none';
+            
+            // 그리기 도구 숨기기
+            const drawingTools = clonedDoc.querySelector('.drawing-tools');
+            if (drawingTools) drawingTools.style.display = 'none';
+            
+            // 업로드 플레이스홀더 숨기기
+            const placeholder = clonedDoc.querySelector('.upload-placeholder');
+            if (placeholder && (currentMode === 'draw' || clonedDoc.querySelector('#uploadedImage').style.display !== 'none')) {
+                placeholder.style.display = 'none';
+            }
+            
+            // 그리기 모드인 경우 캔버스를 이미지로 교체
+            if (currentMode === 'draw' && canvasDataUrl) {
+                const clonedCanvas = clonedDoc.getElementById('drawingCanvas');
+                const img = clonedDoc.createElement('img');
+                img.src = canvasDataUrl;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'contain';
+                clonedCanvas.parentNode.replaceChild(img, clonedCanvas);
+            }
+            
+            // 카메라 모드인 경우 촬영된 사진 처리
+            if (currentMode === 'camera' && capturedPhotoData) {
+                const imageArea = clonedDoc.getElementById('imageArea');
+                imageArea.innerHTML = '';
+                const img = clonedDoc.createElement('img');
+                img.src = capturedPhotoData;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'contain';
+                imageArea.appendChild(img);
+            }
+            
+            // 카메라 프리뷰 숨기기
+            const cameraPreview = clonedDoc.getElementById('cameraPreview');
+            if (cameraPreview) cameraPreview.style.display = 'none';
+            
+            // 카메라 컨트롤 숨기기
+            const cameraControls = clonedDoc.getElementById('cameraControls');
+            if (cameraControls) cameraControls.style.display = 'none';
+            
+            // textarea 스타일 조정 (이미지용)
+            const textareas = clonedDoc.querySelectorAll('.writing-textarea');
+            textareas.forEach(textarea => {
+                textarea.style.border = 'none';
+                textarea.style.resize = 'none';
+                textarea.style.overflow = 'hidden';
+                // textarea 높이를 내용에 맞게 자동 조정
+                if (textarea.value) {
+                    textarea.style.height = 'auto';
+                    textarea.style.height = textarea.scrollHeight + 'px';
+                }
+            });
+        }
+    };
+    
+    // html2canvas로 이미지 생성
+    html2canvas(element, options).then(canvas => {
+        // 이미지 다운로드
+        const link = document.createElement('a');
+        link.download = 'See-Think-Wonder_학습지.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        
+        // 버튼 복원
+        imageBtn.disabled = false;
+        imageBtn.textContent = originalText;
+    }).catch(error => {
+        console.error('이미지 생성 오류:', error);
+        alert('이미지 생성 중 오류가 발생했습니다.');
+        // 버튼 복원
+        imageBtn.disabled = false;
+        imageBtn.textContent = originalText;
+    });
+}
+</script>
+
+</body>
+</html>
