@@ -577,72 +577,78 @@
             display: none;
         }
         
-        /* 템플릿 워크시트 스타일 */
+        /* 수정된 템플릿 워크시트 스타일 */
         .template-worksheet {
             display: none;
             width: 297mm;
             height: 210mm;
             margin: 0 auto;
             background: white;
-            padding: 15mm;
+            padding: 12mm;
             position: relative;
+            box-sizing: border-box;
         }
         
         .template-header {
             text-align: center;
-            margin-bottom: 10mm;
+            margin-bottom: 8mm;
+            position: relative;
+            height: 25mm;
         }
         
         .template-title {
             background: #4a90e2;
             color: white;
-            padding: 15px 30px;
-            border-radius: 15px;
-            font-size: 32px;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-size: 28px;
             font-weight: bold;
             display: inline-block;
+            line-height: 1.2;
         }
         
         .template-student-info {
             position: absolute;
-            top: 15mm;
-            right: 15mm;
+            top: 0;
+            right: 0;
             display: flex;
-            gap: 20px;
+            gap: 15px;
+            font-size: 14px;
         }
         
         .template-info-field {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 16px;
+            gap: 6px;
         }
         
         .template-info-field label {
             font-weight: bold;
+            white-space: nowrap;
         }
         
         .template-info-field .blank {
             display: inline-block;
-            width: 100px;
-            border-bottom: 2px solid #333;
-            margin-left: 5px;
+            width: 80px;
+            border-bottom: 1.5px solid #333;
+            margin-left: 3px;
         }
         
         .template-content {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            height: calc(100% - 80mm);
-            margin-top: 20mm;
+            gap: 12mm;
+            height: calc(210mm - 12mm - 12mm - 25mm - 8mm - 15mm);
+            margin-top: 0;
         }
         
         .template-section {
             border: 2px solid;
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         
         .template-section.see {
@@ -662,50 +668,57 @@
         
         .template-section-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
         }
         
         .template-section-icon {
-            font-size: 60px;
-            margin-bottom: 15px;
+            font-size: 50px;
+            margin-bottom: 10px;
+            line-height: 1;
         }
         
         .template-section-title {
-            font-size: 32px;
+            font-size: 28px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            line-height: 1.1;
         }
         
         .template-section-question {
-            font-size: 16px;
+            font-size: 14px;
             color: #666;
             font-style: italic;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
+            line-height: 1.2;
         }
         
         .template-section-question-ko {
-            font-size: 18px;
+            font-size: 16px;
             color: #333;
             font-weight: 500;
+            line-height: 1.2;
         }
         
         .template-writing-area {
             background: white;
             border: 1px solid #ddd;
-            border-radius: 10px;
+            border-radius: 8px;
             flex: 1;
-            padding: 20px;
+            padding: 15px;
+            min-height: 0;
         }
         
         .template-footer {
             position: absolute;
-            bottom: 5mm; 
-            left: 0;
-            right: 0;
+            bottom: 8mm;
+            left: 12mm;
+            right: 12mm;
             text-align: center;
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
+            line-height: 1.3;
         }
         
         /* 인쇄 전용 스타일 */
@@ -807,6 +820,32 @@
             
             .footer .tip {
                 display: none !important;
+            }
+            
+            /* 템플릿 인쇄 스타일 */
+            .template-worksheet {
+                width: 297mm !important;
+                height: 210mm !important;
+                max-width: none !important;
+                max-height: none !important;
+                page-break-inside: avoid !important;
+                page-break-after: avoid !important;
+                overflow: hidden !important;
+            }
+            
+            .template-content {
+                page-break-inside: avoid !important;
+                overflow: hidden !important;
+            }
+            
+            .template-section {
+                page-break-inside: avoid !important;
+                overflow: hidden !important;
+            }
+            
+            .template-writing-area {
+                overflow: hidden !important;
+                page-break-inside: avoid !important;
             }
         }
         
@@ -1214,17 +1253,16 @@
 <div class="template-worksheet" id="templateWorksheet">
     <div class="template-header">
         <div class="template-title">See Think Wonder</div>
-    </div>
-    
-    <div class="template-student-info">
-        <div class="template-info-field">
-            <label>학반:</label><span class="blank"></span>
-        </div>
-        <div class="template-info-field">
-            <label>번호:</label><span class="blank"></span>
-        </div>
-        <div class="template-info-field">
-            <label>이름:</label><span class="blank"></span>
+        <div class="template-student-info">
+            <div class="template-info-field">
+                <label>학반:</label><span class="blank"></span>
+            </div>
+            <div class="template-info-field">
+                <label>번호:</label><span class="blank"></span>
+            </div>
+            <div class="template-info-field">
+                <label>이름:</label><span class="blank"></span>
+            </div>
         </div>
     </div>
     
