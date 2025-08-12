@@ -557,6 +557,18 @@
             font-style: italic;
         }
         
+        /* 이미지 다운로드용 텍스트 표시 스타일 */
+        .text-display {
+            padding: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            word-break: keep-all;
+            color: #000;
+        }
+        
         .footer {
             margin-top: 15px;
             text-align: center;
@@ -1961,7 +1973,7 @@ function downloadTemplate() {
         });
 }
 
-// 이미지 다운로드
+// 이미지 다운로드 - 개선된 버전
 function downloadImage() {
     // 버튼 비활성화
     const imageBtn = document.getElementById('imageBtn');
@@ -2056,16 +2068,28 @@ function downloadImage() {
             const cameraControls = clonedDoc.getElementById('cameraControls');
             if (cameraControls) cameraControls.style.display = 'none';
             
-            // textarea 스타일 조정 (이미지용)
-            const textareas = clonedDoc.querySelectorAll('.writing-textarea');
-            textareas.forEach(textarea => {
-                textarea.style.border = 'none';
-                textarea.style.resize = 'none';
-                textarea.style.overflow = 'hidden';
-                // textarea 높이를 내용에 맞게 자동 조정
-                if (textarea.value) {
-                    textarea.style.height = 'auto';
-                    textarea.style.height = textarea.scrollHeight + 'px';
+            // textarea를 div로 변환하여 전체 내용이 보이도록 처리
+            const sections = clonedDoc.querySelectorAll('.section');
+            const originalTextareas = document.querySelectorAll('.writing-textarea');
+            
+            sections.forEach((section, index) => {
+                const writingArea = section.querySelector('.writing-area');
+                const textarea = writingArea.querySelector('.writing-textarea');
+                const originalTextarea = originalTextareas[index];
+                
+                if (textarea && originalTextarea && originalTextarea.value) {
+                    // 새로운 div 생성
+                    const textDiv = clonedDoc.createElement('div');
+                    textDiv.className = 'text-display';
+                    
+                    // 텍스트 내용 설정 (줄바꿈 유지)
+                    textDiv.textContent = originalTextarea.value;
+                    
+                    // writingArea 스타일 조정
+                    writingArea.innerHTML = '';
+                    writingArea.appendChild(textDiv);
+                    writingArea.style.minHeight = 'auto';
+                    writingArea.style.height = 'auto';
                 }
             });
         }
