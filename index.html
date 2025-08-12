@@ -589,14 +589,14 @@
             display: none;
         }
         
-        /* 수정된 템플릿 워크시트 스타일 */
+        /* 수정된 템플릿 워크시트 스타일 - PDF 1페이지 최적화 */
         .template-worksheet {
             display: none;
-            width: 297mm;
-            height: 210mm;
+            width: 1122px;
+            height: 794px;
             margin: 0 auto;
             background: white;
-            padding: 10mm;
+            padding: 40px;
             position: relative;
             box-sizing: border-box;
             overflow: hidden;
@@ -604,20 +604,20 @@
         
         .template-header {
             text-align: center;
-            margin-bottom: 5mm;
+            margin-bottom: 20px;
             position: relative;
-            padding-top: 8mm;
+            padding-top: 30px;
         }
         
         .template-title {
             background: #4a90e2;
             color: white;
-            padding: 10px 25px;
-            border-radius: 12px;
-            font-size: 24px;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-size: 20px;
             font-weight: bold;
             display: inline-block;
-            line-height: 1.2;
+            line-height: 1;
         }
         
         .template-student-info {
@@ -625,14 +625,14 @@
             top: 0;
             right: 0;
             display: flex;
-            gap: 20px;
-            font-size: 14px;
+            gap: 15px;
+            font-size: 12px;
         }
         
         .template-info-field {
             display: flex;
             align-items: baseline;
-            gap: 6px;
+            gap: 4px;
         }
         
         .template-info-field label {
@@ -642,25 +642,24 @@
         
         .template-info-field .blank {
             display: inline-block;
-            width: 80px;
+            width: 70px;
             border-bottom: 1px solid #333;
-            margin-left: 3px;
+            margin-left: 2px;
             vertical-align: bottom;
-            padding-bottom: 2px;
+            padding-bottom: 1px;
         }
         
         .template-content {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10mm;
-            height: calc(100% - 40mm);
-            margin-top: 5mm;
+            gap: 30px;
+            height: calc(100% - 120px);
         }
         
         .template-section {
             border: 2px solid;
-            border-radius: 12px;
-            padding: 12px;
+            border-radius: 10px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -683,57 +682,57 @@
         
         .template-section-header {
             text-align: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             flex-shrink: 0;
         }
         
         .template-section-icon {
-            font-size: 40px;
-            margin-bottom: 8px;
+            font-size: 35px;
+            margin-bottom: 5px;
             line-height: 1;
         }
         
         .template-section-title {
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 6px;
-            line-height: 1.1;
+            margin-bottom: 4px;
+            line-height: 1;
         }
         
         .template-section-question {
-            font-size: 12px;
+            font-size: 11px;
             color: #666;
             font-style: italic;
-            margin-bottom: 4px;
-            line-height: 1.2;
+            margin-bottom: 3px;
+            line-height: 1;
         }
         
         .template-section-question-ko {
-            font-size: 14px;
+            font-size: 12px;
             color: #333;
             font-weight: 500;
-            line-height: 1.2;
+            line-height: 1;
         }
         
         .template-writing-area {
             background: white;
             border: 1px solid #ddd;
-            border-radius: 8px;
+            border-radius: 6px;
             flex: 1;
-            padding: 12px;
+            padding: 10px;
             min-height: 0;
         }
         
         .template-footer {
             position: absolute;
-            bottom: 5mm;
-            left: 10mm;
-            right: 10mm;
+            bottom: 20px;
+            left: 40px;
+            right: 40px;
             text-align: center;
-            font-size: 10px;
+            font-size: 9px;
             color: #666;
-            line-height: 1.2;
+            line-height: 1;
         }
         
         /* 인쇄 전용 스타일 */
@@ -1916,7 +1915,7 @@ function printWorksheet() {
     }, 100);
 }
 
-// 학습지 템플릿 PDF 다운로드
+// 학습지 템플릿 PDF 다운로드 - 수정된 버전
 function downloadTemplate() {
     // 버튼 비활성화
     const templateBtn = document.getElementById('templateBtn');
@@ -1935,32 +1934,23 @@ function downloadTemplate() {
         filename: 'See-Think-Wonder_템플릿.pdf',
         image: { 
             type: 'jpeg', 
-            quality: 0.98 
+            quality: 1
         },
         html2canvas: { 
-            scale: 2,
+            scale: 1.5,
             useCORS: true,
             logging: false,
             letterRendering: true,
-            backgroundColor: '#ffffff',
-            width: 1122, // A4 landscape in pixels at 96 DPI
-            height: 794,
-            onclone: function(clonedDoc) {
-                // 템플릿이 한 페이지에 맞도록 스타일 조정
-                const clonedTemplate = clonedDoc.getElementById('templateWorksheet');
-                if (clonedTemplate) {
-                    clonedTemplate.style.height = '794px';
-                    clonedTemplate.style.overflow = 'hidden';
-                }
-            }
+            backgroundColor: '#ffffff'
         },
         jsPDF: { 
-            unit: 'mm', 
-            format: 'a4', 
-            orientation: 'landscape' 
+            unit: 'px', 
+            format: [1122, 794], 
+            orientation: 'landscape',
+            compress: true
         },
         pagebreak: { 
-            mode: ['avoid-all', 'css', 'legacy'] 
+            mode: 'avoid-all'
         }
     };
     
