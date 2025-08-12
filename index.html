@@ -592,30 +592,27 @@
         /* 수정된 템플릿 워크시트 스타일 - PDF 1페이지 최적화 */
         .template-worksheet {
             display: none;
-            width: 297mm;
-            height: 210mm;
+            width: 1122px;
+            height: 794px;
             margin: 0;
             background: white;
-            padding: 15mm;
+            padding: 40px;
             position: relative;
             box-sizing: border-box;
             overflow: hidden;
-            page-break-after: avoid;
-            page-break-before: avoid;
-            page-break-inside: avoid;
         }
         
         .template-header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             position: relative;
-            padding-top: 25px;
+            padding-top: 30px;
         }
         
         .template-title {
             background: #4a90e2;
             color: white;
-            padding: 10px 25px;
+            padding: 10px 30px;
             border-radius: 12px;
             font-size: 24px;
             font-weight: bold;
@@ -655,8 +652,9 @@
         .template-content {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 25px;
-            height: calc(100% - 100px);
+            gap: 30px;
+            height: calc(100% - 120px);
+            padding: 0 20px;
         }
         
         .template-section {
@@ -666,6 +664,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            min-width: 0;
         }
         
         .template-section.see {
@@ -729,9 +728,9 @@
         
         .template-footer {
             position: absolute;
-            bottom: 15mm;
-            left: 15mm;
-            right: 15mm;
+            bottom: 20px;
+            left: 40px;
+            right: 40px;
             text-align: center;
             font-size: 10px;
             color: #666;
@@ -1918,7 +1917,7 @@ function printWorksheet() {
     }, 100);
 }
 
-// 학습지 템플릿 PDF 다운로드 - 수정된 버전 (1페이지 최적화)
+// 학습지 템플릿 PDF 다운로드 - 수정된 버전 (중앙 정렬 및 전체 영역 캡처)
 function downloadTemplate() {
     // 버튼 비활성화
     const templateBtn = document.getElementById('templateBtn');
@@ -1929,17 +1928,22 @@ function downloadTemplate() {
     // 템플릿 워크시트 요소
     const templateWorksheet = document.getElementById('templateWorksheet');
     
-    // 템플릿 표시
+    // 템플릿을 화면 밖에 위치시켜 실제 렌더링되도록 함
     templateWorksheet.style.display = 'block';
+    templateWorksheet.style.position = 'fixed';
+    templateWorksheet.style.left = '-9999px';
+    templateWorksheet.style.top = '0';
+    templateWorksheet.style.width = '1122px';  // A4 landscape width in pixels at 96 DPI
+    templateWorksheet.style.height = '794px';  // A4 landscape height in pixels at 96 DPI
     
     // 렌더링이 완료될 때까지 잠시 대기
     setTimeout(() => {
         const opt = {
-            margin: [0, 0, 0, 0],
+            margin: 0,
             filename: 'See-Think-Wonder_템플릿.pdf',
             image: { 
                 type: 'jpeg', 
-                quality: 0.98
+                quality: 1
             },
             html2canvas: { 
                 scale: 2,
@@ -1947,31 +1951,33 @@ function downloadTemplate() {
                 logging: false,
                 letterRendering: true,
                 backgroundColor: '#ffffff',
-                width: templateWorksheet.scrollWidth,
-                height: templateWorksheet.scrollHeight,
-                windowWidth: templateWorksheet.scrollWidth,
-                windowHeight: templateWorksheet.scrollHeight
+                width: 1122,
+                height: 794,
+                x: 0,
+                y: 0,
+                scrollX: 0,
+                scrollY: 0,
+                windowWidth: 1122,
+                windowHeight: 794
             },
             jsPDF: { 
-                unit: 'mm', 
-                format: 'a4', 
+                unit: 'px', 
+                format: [1122, 794], 
                 orientation: 'landscape',
-                compress: true,
-                precision: 16
-            },
-            pagebreak: { 
-                mode: ['avoid-all', 'css', 'legacy'],
-                before: [],
-                after: [],
-                avoid: ['#templateWorksheet']
+                compress: false
             }
         };
         
         // PDF 생성
         html2pdf().set(opt).from(templateWorksheet).save()
             .then(() => {
-                // 템플릿 숨기기
+                // 템플릿 숨기기 및 원래 스타일로 복원
                 templateWorksheet.style.display = 'none';
+                templateWorksheet.style.position = '';
+                templateWorksheet.style.left = '';
+                templateWorksheet.style.top = '';
+                templateWorksheet.style.width = '';
+                templateWorksheet.style.height = '';
                 
                 // 버튼 복원
                 templateBtn.disabled = false;
@@ -1981,14 +1987,19 @@ function downloadTemplate() {
                 console.error('템플릿 생성 오류:', error);
                 alert('템플릿 생성 중 오류가 발생했습니다.');
                 
-                // 템플릿 숨기기
+                // 템플릿 숨기기 및 원래 스타일로 복원
                 templateWorksheet.style.display = 'none';
+                templateWorksheet.style.position = '';
+                templateWorksheet.style.left = '';
+                templateWorksheet.style.top = '';
+                templateWorksheet.style.width = '';
+                templateWorksheet.style.height = '';
                 
                 // 버튼 복원
                 templateBtn.disabled = false;
                 templateBtn.textContent = originalText;
             });
-    }, 100); // 렌더링 대기 시간
+    }, 200); // 렌더링 대기 시간 증가
 }
 
 // 이미지 다운로드 - 개선된 버전
