@@ -592,32 +592,35 @@
         /* 수정된 템플릿 워크시트 스타일 - PDF 1페이지 최적화 */
         .template-worksheet {
             display: none;
-            width: 1122px;
-            height: 794px;
-            margin: 0 auto;
+            width: 297mm;
+            height: 210mm;
+            margin: 0;
             background: white;
-            padding: 40px;
+            padding: 15mm;
             position: relative;
             box-sizing: border-box;
             overflow: hidden;
+            page-break-after: avoid;
+            page-break-before: avoid;
+            page-break-inside: avoid;
         }
         
         .template-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             position: relative;
-            padding-top: 30px;
+            padding-top: 25px;
         }
         
         .template-title {
             background: #4a90e2;
             color: white;
-            padding: 8px 20px;
-            border-radius: 10px;
-            font-size: 20px;
+            padding: 10px 25px;
+            border-radius: 12px;
+            font-size: 24px;
             font-weight: bold;
             display: inline-block;
-            line-height: 1;
+            line-height: 1.2;
         }
         
         .template-student-info {
@@ -625,14 +628,14 @@
             top: 0;
             right: 0;
             display: flex;
-            gap: 15px;
-            font-size: 12px;
+            gap: 20px;
+            font-size: 14px;
         }
         
         .template-info-field {
             display: flex;
             align-items: baseline;
-            gap: 4px;
+            gap: 5px;
         }
         
         .template-info-field label {
@@ -642,24 +645,24 @@
         
         .template-info-field .blank {
             display: inline-block;
-            width: 70px;
+            width: 80px;
             border-bottom: 1px solid #333;
-            margin-left: 2px;
+            margin-left: 3px;
             vertical-align: bottom;
-            padding-bottom: 1px;
+            padding-bottom: 2px;
         }
         
         .template-content {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-            height: calc(100% - 120px);
+            gap: 25px;
+            height: calc(100% - 100px);
         }
         
         .template-section {
             border: 2px solid;
-            border-radius: 10px;
-            padding: 10px;
+            border-radius: 12px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -682,57 +685,57 @@
         
         .template-section-header {
             text-align: center;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             flex-shrink: 0;
         }
         
         .template-section-icon {
-            font-size: 35px;
-            margin-bottom: 5px;
+            font-size: 40px;
+            margin-bottom: 8px;
             line-height: 1;
         }
         
         .template-section-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: bold;
             color: #333;
-            margin-bottom: 4px;
-            line-height: 1;
+            margin-bottom: 5px;
+            line-height: 1.2;
         }
         
         .template-section-question {
-            font-size: 11px;
+            font-size: 13px;
             color: #666;
             font-style: italic;
-            margin-bottom: 3px;
-            line-height: 1;
+            margin-bottom: 4px;
+            line-height: 1.2;
         }
         
         .template-section-question-ko {
-            font-size: 12px;
+            font-size: 14px;
             color: #333;
             font-weight: 500;
-            line-height: 1;
+            line-height: 1.2;
         }
         
         .template-writing-area {
             background: white;
             border: 1px solid #ddd;
-            border-radius: 6px;
+            border-radius: 8px;
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             min-height: 0;
         }
         
         .template-footer {
             position: absolute;
-            bottom: 20px;
-            left: 40px;
-            right: 40px;
+            bottom: 15mm;
+            left: 15mm;
+            right: 15mm;
             text-align: center;
-            font-size: 9px;
+            font-size: 10px;
             color: #666;
-            line-height: 1;
+            line-height: 1.2;
         }
         
         /* 인쇄 전용 스타일 */
@@ -1915,7 +1918,7 @@ function printWorksheet() {
     }, 100);
 }
 
-// 학습지 템플릿 PDF 다운로드 - 수정된 버전
+// 학습지 템플릿 PDF 다운로드 - 수정된 버전 (1페이지 최적화)
 function downloadTemplate() {
     // 버튼 비활성화
     const templateBtn = document.getElementById('templateBtn');
@@ -1929,52 +1932,63 @@ function downloadTemplate() {
     // 템플릿 표시
     templateWorksheet.style.display = 'block';
     
-    const opt = {
-        margin: 0,
-        filename: 'See-Think-Wonder_템플릿.pdf',
-        image: { 
-            type: 'jpeg', 
-            quality: 1
-        },
-        html2canvas: { 
-            scale: 1.5,
-            useCORS: true,
-            logging: false,
-            letterRendering: true,
-            backgroundColor: '#ffffff'
-        },
-        jsPDF: { 
-            unit: 'px', 
-            format: [1122, 794], 
-            orientation: 'landscape',
-            compress: true
-        },
-        pagebreak: { 
-            mode: 'avoid-all'
-        }
-    };
-    
-    // PDF 생성
-    html2pdf().set(opt).from(templateWorksheet).save()
-        .then(() => {
-            // 템플릿 숨기기
-            templateWorksheet.style.display = 'none';
-            
-            // 버튼 복원
-            templateBtn.disabled = false;
-            templateBtn.textContent = originalText;
-        })
-        .catch((error) => {
-            console.error('템플릿 생성 오류:', error);
-            alert('템플릿 생성 중 오류가 발생했습니다.');
-            
-            // 템플릿 숨기기
-            templateWorksheet.style.display = 'none';
-            
-            // 버튼 복원
-            templateBtn.disabled = false;
-            templateBtn.textContent = originalText;
-        });
+    // 렌더링이 완료될 때까지 잠시 대기
+    setTimeout(() => {
+        const opt = {
+            margin: [0, 0, 0, 0],
+            filename: 'See-Think-Wonder_템플릿.pdf',
+            image: { 
+                type: 'jpeg', 
+                quality: 0.98
+            },
+            html2canvas: { 
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                letterRendering: true,
+                backgroundColor: '#ffffff',
+                width: templateWorksheet.scrollWidth,
+                height: templateWorksheet.scrollHeight,
+                windowWidth: templateWorksheet.scrollWidth,
+                windowHeight: templateWorksheet.scrollHeight
+            },
+            jsPDF: { 
+                unit: 'mm', 
+                format: 'a4', 
+                orientation: 'landscape',
+                compress: true,
+                precision: 16
+            },
+            pagebreak: { 
+                mode: ['avoid-all', 'css', 'legacy'],
+                before: [],
+                after: [],
+                avoid: ['#templateWorksheet']
+            }
+        };
+        
+        // PDF 생성
+        html2pdf().set(opt).from(templateWorksheet).save()
+            .then(() => {
+                // 템플릿 숨기기
+                templateWorksheet.style.display = 'none';
+                
+                // 버튼 복원
+                templateBtn.disabled = false;
+                templateBtn.textContent = originalText;
+            })
+            .catch((error) => {
+                console.error('템플릿 생성 오류:', error);
+                alert('템플릿 생성 중 오류가 발생했습니다.');
+                
+                // 템플릿 숨기기
+                templateWorksheet.style.display = 'none';
+                
+                // 버튼 복원
+                templateBtn.disabled = false;
+                templateBtn.textContent = originalText;
+            });
+    }, 100); // 렌더링 대기 시간
 }
 
 // 이미지 다운로드 - 개선된 버전
